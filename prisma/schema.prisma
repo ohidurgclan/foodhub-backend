@@ -1,0 +1,155 @@
+//* This is your Prisma schema file,
+//* learn more about it in the docs: https://*pris.ly/d/prisma-schema
+
+//* Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+//* Try Prisma Accelerate: https://*pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+//** ENUMS
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum DietaryType {
+  VEG
+  NON_VEG
+  VEGAN
+  HALAL
+}
+
+//** USER
+model User {
+  id        String   @id @default(uuid())
+  role      Role     @default(CUSTOMER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  provider  Provider?
+  orders    Order[]
+  reviews   Review[]
+
+  @@index([role])
+  @@index([isActive])
+}
+
+
+//* PROVIDER
+model Provider {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  name        String
+  description String?
+  address     String
+  phone       String
+  isOpen      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  meals  Meal[]
+  orders Order[]
+
+  @@index([isOpen])
+}
+
+//* CATEGORY
+model Category {
+  id    String @id @default(uuid())
+  name  String @unique
+  meals Meal[]
+}
+//* MEAL
+model Meal {
+  id           String        @id @default(uuid())
+  providerId   String
+  categoryId   String?
+  name         String
+  description  String?
+  price        Float
+  cuisine      String
+  dietaryType  DietaryType
+  isAvailable  Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  provider Provider @relation(fields: [providerId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id])
+  reviews  Review[]
+  orderItems OrderItem[]
+  @@index([providerId])
+  @@index([categoryId])
+  @@index([cuisine])
+  @@index([dietaryType])
+  @@index([price])
+  @@index([isAvailable])
+  @@index([cuisine, dietaryType, price])
+}
+
+
+//* ORDER
+model Order {
+  id              String      @id @default(uuid())
+  userId          String
+  providerId      String
+  status          OrderStatus @default(PENDING)
+  totalAmount     Float
+  deliveryAddress String
+  createdAt       DateTime    @default(now())
+
+  user       User       @relation(fields: [userId], references: [id])
+  provider   Provider   @relation(fields: [providerId], references: [id])
+  items      OrderItem[]
+  @@index([userId])
+  @@index([providerId])
+  @@index([providerId, status])
+  @@index([status])
+  @@index([createdAt])
+}
+//* ORDER ITEM
+
+model OrderItem {
+  id       String @id @default(uuid())
+  orderId  String
+  mealId   String
+  quantity Int
+  price    Float
+
+  order Order @relation(fields: [orderId], references: [id])
+  meal  Meal  @relation(fields: [mealId], references: [id])
+
+  @@index([orderId])
+  @@index([mealId])
+}
+
+//* REVIEW
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  mealId    String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id])
+  meal Meal @relation(fields: [mealId], references: [id])
+  @@index([mealId])
+  @@index([userId])
+  @@index([rating])
+  @@index([createdAt])
+}
