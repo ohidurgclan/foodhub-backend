@@ -17,6 +17,23 @@ const createOrder = async (req: Request, res: Response) => {
         });
     }
 };
+const getUserOrders = async (req: Request, res: Response) => {
+    const userId = (req as { user: { id: string } }).user.id;
+    try {
+        const orders = await orderService.getUserOrders(userId);
+        res.json({
+            success: true,
+            data: orders
+        });
+    } catch (error: any) {
+        res.status(404).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export const orderController = {
-    createOrder
+    createOrder,
+    getUserOrders
 };
