@@ -33,7 +33,23 @@ const getUserOrders = async (req: Request, res: Response) => {
     }
 };
 
+const getOrderDetails = async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    try {
+        const order = await orderService.getOrderDetails(id);
+        res.json({
+            success: true,
+            data: order
+        });
+    } catch (error: any) {
+        res.status(404).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
 export const orderController = {
     createOrder,
-    getUserOrders
+    getUserOrders,
+    getOrderDetails
 };
