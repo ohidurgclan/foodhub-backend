@@ -62,8 +62,26 @@ const seedProviderProfile = async (req: Request, res: Response) => {
     }
 };
 
+const seedOrder = async (req: Request, res: Response) => {
+    try {
+        const order = await seedServices.seedOrder(req.body);
+        res.status(201).json({
+            success: true,
+            message: "Order seeded successfully",
+            data: order
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to seed order",
+            error
+        });
+    }
+};
+
 export const seedController = {
     seedMeals,
     seedCategory,
-    seedProviderProfile
+    seedProviderProfile,
+    seedOrder
 }

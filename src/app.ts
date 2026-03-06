@@ -3,6 +3,7 @@ import cors from "cors";
 import mealRoutes from "./modules/meals/meal.routes";
 import { authRouter } from "./modules/auth/auth.route";
 import seedRoutes from "./modules/seeds/seed.routes";
+import orderRoutes from "./modules/orders/order.routes";
 
 const app: Application = express();
 app.use(cors({
@@ -13,7 +14,9 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use("/api", mealRoutes);
-app.use("/api/seeds", seedRoutes);
+app.use("/api", orderRoutes);
+
+app.use("/api/seed", seedRoutes);
 
 
 app.get("/", (req:Request, res: Response) => {

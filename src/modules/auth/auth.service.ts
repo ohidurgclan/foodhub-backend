@@ -33,22 +33,17 @@ const loginUser = async (req: Request) => {
 
 const getCurrentUser = async (req: Request) => {
     const headers = new Headers();
-
     Object.entries(req.headers).forEach(([key, value]) => {
         if (typeof value === "string") {
             headers.append(key, value);
         }
     });
-
     const session = await auth.api.getSession({ headers });
-
     if (!session) {
         throw new Error("Unauthorized");
     }
-
     return session.user;
 };
-
 export const authServices = {
     registerUser,
     loginUser,

@@ -22,6 +22,21 @@ interface ProviderProfilePayload {
     logo?: string;
 }
 
+interface OrderItemPayload {
+    mealId: string;
+    quantity: number;
+    price: number;
+}
+
+interface CreateOrderPayload {
+    userId: string;
+    providerId: string;
+    deliveryAddress: string;
+    phone: string;
+    totalAmount: number;
+    items: OrderItemPayload[];
+}
+
 const createMeal = async (payload: MealPayload) => {
     const {
         name,
@@ -91,7 +106,6 @@ const createProviderProfile = async (payload: ProviderProfilePayload) => {
     if (existingProfile) {
         throw new Error("Provider profile already exists");
     }
-
     const profile = await prisma.providerProfile.create({
         data: {
             userId,
@@ -105,8 +119,35 @@ const createProviderProfile = async (payload: ProviderProfilePayload) => {
     return profile;
 };
 
+const seedOrder = async (payload: CreateOrderPayload) => {
+    const { userId, providerId, deliveryAddress, phone, items } = payload;
+    const totalAmount = items.reduce((sum: number, item: any) => sum + item.price * item.quantity,0
+    );
+    const order = await prisma.order.create({
+        data: {
+            userId,
+            providerId,
+            deliveryAddress,
+            phone,
+            totalAmount,
+            items: {
+                create: items.map((item: OrderItemPayload) => ({
+                    mealId: item.mealId,
+                    quantity: item.quantity,
+                    price: item.price,
+                })),
+            },
+        },
+        include: {
+            items: true,
+        },
+    });
+    return order;
+};
+
 export const seedServices = {
     createMeal,
     createCategory,
-    createProviderProfile
+    createProviderProfile,
+    seedOrder
 }
