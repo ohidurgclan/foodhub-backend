@@ -1,8 +1,8 @@
- import express, { Application, Request, Response } from "express";
-import { toNodeHandler } from "better-auth/node";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import { auth } from "./lib/auth";
+import mealRoutes from "./modules/meals/meal.routes";
 import { authRouter } from "./modules/auth/auth.route";
+import seedRoutes from "./modules/seeds/seed.routes";
 
 const app: Application = express();
 app.use(cors({
@@ -10,9 +10,12 @@ app.use(cors({
     credentials: true 
 }))
 
-
 app.use(express.json());
 app.use('/api/auth', authRouter);
+app.use("/api", mealRoutes);
+app.use("/api/seeds", seedRoutes);
+
+
 app.get("/", (req:Request, res: Response) => {
     res.send("FoodHub Backend is running... Congratulations! Md Ohidur Rahman");
 });
