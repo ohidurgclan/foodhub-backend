@@ -25,3 +25,17 @@ const updateMeal = async (providerId: string, mealId: string, payload: any) => {
         data: payload
     });
 };
+const deleteMeal = async (providerId: string, mealId: string) => {
+    const meal = await prisma.meal.findFirst({
+        where: {
+            id: mealId,
+            providerId
+        }
+    });
+    if (!meal) {
+        throw new Error("Meal not found or unauthorized");
+    }
+    return prisma.meal.delete({
+        where: { id: mealId }
+    });
+};

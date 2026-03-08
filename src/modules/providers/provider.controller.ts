@@ -61,3 +61,27 @@ const updateMeal = async (req: Request, res: Response) => {
     }
 };
 
+const deleteMeal = async (req: Request, res: Response) => {
+    try {
+
+        const userId = req.user!.id;
+
+        const provider = await prisma.providerProfile.findUnique({
+            where: { userId }
+        });
+
+        await providerService.deleteMeal(provider!.id, req.params.id as string);
+
+        res.json({
+            success: true,
+            message: "Meal deleted"
+        });
+
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
