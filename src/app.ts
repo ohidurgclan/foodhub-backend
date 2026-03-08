@@ -4,6 +4,10 @@ import mealRoutes from "./modules/meals/meal.routes";
 import { authRouter } from "./modules/auth/auth.route";
 import seedRoutes from "./modules/seeds/seed.routes";
 import orderRoutes from "./modules/orders/order.routes";
+import auth, { UserRole } from "./middleware/auth";
+// import providerRoutes from "./modules/providers/provider.routes";
+
+UserRole
 
 const app: Application = express();
 app.use(cors({
@@ -13,8 +17,9 @@ app.use(cors({
 
 app.use(express.json());
 app.use('/api/auth', authRouter);
-app.use("/api", mealRoutes);
-app.use("/api", orderRoutes);
+app.use("/api",auth(UserRole.CUSTOMER), mealRoutes);
+app.use("/api", auth(UserRole.CUSTOMER), orderRoutes);
+// app.use("/api", auth(UserRole.PROVIDER), providerRoutes);
 
 app.use("/api/seed", seedRoutes);
 
