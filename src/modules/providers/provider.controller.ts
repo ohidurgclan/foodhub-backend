@@ -85,3 +85,37 @@ const deleteMeal = async (req: Request, res: Response) => {
     }
 };
 
+const updateOrderStatus = async (req: Request, res: Response) => {
+    try {
+
+        const userId = req.user!.id;
+
+        const provider = await prisma.providerProfile.findUnique({
+            where: { userId }
+        });
+
+        const order = await providerService.updateOrderStatus(
+            provider!.id,
+            req.params.id as string,
+            req.body.status
+        );
+
+        res.json({
+            success: true,
+            data: order
+        });
+
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+export const providerController = {
+    addMeal,
+    updateMeal,
+    deleteMeal,
+    updateOrderStatus
+};

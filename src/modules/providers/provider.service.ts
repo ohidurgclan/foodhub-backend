@@ -39,3 +39,29 @@ const deleteMeal = async (providerId: string, mealId: string) => {
         where: { id: mealId }
     });
 };
+const updateOrderStatus = async (
+    providerId: string,
+    orderId: string,
+    status: string
+) => {
+    const order = await prisma.order.findFirst({
+        where: {
+            id: orderId,
+            providerId
+        }
+    });
+    if (!order) {
+        throw new Error("Order not found for this provider");
+    }
+    return prisma.order.update({
+        where: { id: orderId },
+        data: { status: OrderStatus[status as keyof typeof OrderStatus] }
+    });
+};
+
+export const providerService = {
+    addMeal,
+    updateMeal,
+    deleteMeal,
+    updateOrderStatus
+};
