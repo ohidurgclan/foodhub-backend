@@ -25,6 +25,7 @@ const updateMeal = async (providerId: string, mealId: string, payload: any) => {
         data: payload
     });
 };
+
 const deleteMeal = async (providerId: string, mealId: string) => {
     const meal = await prisma.meal.findFirst({
         where: {
@@ -39,6 +40,7 @@ const deleteMeal = async (providerId: string, mealId: string) => {
         where: { id: mealId }
     });
 };
+
 const updateOrderStatus = async (
     providerId: string,
     orderId: string,
